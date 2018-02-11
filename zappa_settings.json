@@ -1,0 +1,6 @@
+{
+    "dev": {
+        "s3_bucket": "bargain-stocks",
+        "app_function": "stocks.app"
+    }
+}
