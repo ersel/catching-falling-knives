@@ -1,28 +1,20 @@
-from datetime import datetime, timedelta
 from decimal import *
 import urllib.parse as parse
 from scrapy import Spider
 from scrapy.http.request import Request
+from lib.weekday import get_previous_weekday
 
 nyse_url = 'http://www.wsj.com/mdc/public/page/2_3021-losenyse-loser-'
 nasdaq_url = 'http://www.wsj.com/mdc/public/page/2_3021-losennm-loser-'
 profile_base_url = 'http://quotes.wsj.com/'
 
-def get_previous_weekday():
-    # markets are open mon-fri, weekdays
-    previous_date = datetime.now() - timedelta(1)
-    while previous_date.weekday() > 4:
-        previous_date = previous_date - timedelta(1)
-
-    return previous_date.strftime("%Y%m%d")
-
 class WSJSpider(Spider):
     name = 'WSJ Spider'
 
     def start_requests(self):
-        yesterday = get_previous_weekday()
+        last_weekday = get_previous_weekday()
         for u in [nyse_url, nasdaq_url]:
-            url = '{}{}.html'.format(u, yesterday)
+            url = '{}{}.html'.format(u, last_weekday)
             yield Request(url=url, callback=self.parse_decliners)
 
     def parse_decliners(self, response):
