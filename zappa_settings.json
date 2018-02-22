@@ -1,6 +1,12 @@
 {
-    "dev": {
-        "s3_bucket": "bargain-stocks",
-        "app_function": "stocks.app"
-    }
+	"dev": {
+		"project_name": "bargain-stocks",
+		"s3_bucket": "bargain-stocks",
+		"app_function": "stocks.app",
+		"events": [{
+			"function": "stocks.schedule",
+			"expression": "cron(40 15 ? * MON-FRI *)"
+		}],
+		"timeout_seconds": 300
+	}
 }

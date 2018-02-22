@@ -1,20 +1,32 @@
 import json
-import pandas
 from io import StringIO
+import operator
+import csv
 
 def analyze_stocks(decliners):
-    df = pandas.DataFrame.from_dict(decliners, orient='index')
-    # pick companies which are cashflow positive and has paid a dividend last year
-    cols = ['pe_ratio', 'dividend_yield']
-    df[cols] = df[df[cols] > 0][cols]
-    filtered = df.dropna()
-    ranked = filtered.sort_values(by=['pe_ratio', 'dividend_yield', 'price_decline_percentage'], ascending=[True, False, True])
-    print(ranked)
+    decliners_list = []
+    for key, value in decliners.items():
+        pe_ratio = value.get('pe_ratio')
+        dividend_yield = value.get('dividend_yield')
+        if pe_ratio and dividend_yield:
+            decliners_list.append([
+                value.get('symbol'),
+                value.get('closing_price'),
+                value.get('price_decline'),
+                value.get('price_decline_percentage'),
+                pe_ratio,
+                dividend_yield
+            ])
+    ranked_stocks = sorted(decliners_list, key=operator.itemgetter(3))
+    ranked_stocks = sorted(ranked_stocks, key=operator.itemgetter(5), reverse=True)
+    ranked_stocks = sorted(ranked_stocks, key=operator.itemgetter(4))
 
     buff = StringIO()
-    ranked.to_csv(buff)
+    writer = csv.writer(buff)
+    writer.writerow(['Symbol', 'Closing Price', 'Price Decline', 'Price Decline Percent', 'PE', 'Dividend Yield'])
+    writer.writerows(ranked_stocks)
     buff.seek(0)
-    csv = buff.getvalue()
+    csv_data = buff.getvalue()
     buff.close()
 
-    return ranked.values.tolist(), csv
+    return ranked_stocks, csv_data
