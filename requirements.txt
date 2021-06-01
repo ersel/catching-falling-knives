@@ -55,7 +55,7 @@ troposphere==2.2.0
 twilio==6.10.2
 Twisted==17.9.0
 Unidecode==1.0.22
-urllib3==1.22
+urllib3==1.26.5
 w3lib==1.19.0
 Werkzeug==0.12
 wsgi-request-logger==0.4.6
